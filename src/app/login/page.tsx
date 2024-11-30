@@ -45,6 +45,7 @@ const Login: React.FC = () => {
       if (response.ok) {
         setIsOtpSent(() => true);
       } else {
+        console.log(response, response.json(), 'tjos');
         // Handle unexpected response
         setError('Failed to send OTP. Please try again.');
       }
