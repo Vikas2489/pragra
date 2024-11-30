@@ -1,6 +1,5 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import Header from '../components/Header';
 import { useRouter } from 'next/navigation';
 
