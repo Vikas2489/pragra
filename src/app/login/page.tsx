@@ -48,8 +48,6 @@ const Login: React.FC = () => {
         setError('Failed to send OTP. Please try again.');
       }
 
-      const responseData = await response.json(); // Parse the JSON response
-
       setLoading(() => false);
     } catch (error) {
       setLoading(() => false);
@@ -83,9 +81,12 @@ const Login: React.FC = () => {
       const { token } = await response.json();
       localStorage.setItem('userToken', token);
       window.location.href = '/product';
-    } catch (err: any) {
-      console.log(err, 'err in catch condition ');
-      setError(err.message || 'An error occurred. Please try again.');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || 'An error occurred. Please try again.');
+      } else {
+        setError('An error occurred. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -93,9 +94,11 @@ const Login: React.FC = () => {
 
   useEffect(() => {
     // Check if userToken exists in localStorage
-    const userToken = localStorage.getItem('userToken');
-    if (userToken) {
-      router.push('/product');
+    if (typeof window !== 'undefined') {
+      const userToken = localStorage.getItem('userToken');
+      if (userToken) {
+        router.push('/product');
+      }
     }
   }, [router]);
 

@@ -3,14 +3,17 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const Header = () => {
-  let pathname = usePathname();
+  const pathname = usePathname();
 
   const handleLogout = () => {
-    localStorage.clear();
-    window.location.href = '/login';
+    if (typeof window !== 'undefined') {
+      localStorage.clear();
+      window.location.href = '/login';
+    }
   };
 
-  const userToken = localStorage.getItem('userToken');
+  const userToken =
+    typeof window !== 'undefined' ? localStorage.getItem('userToken') : null;
 
   return (
     <header className="flex shadow-md py-4 px-4 sm:px-10 bg-white font-[sans-serif] min-h-[70px] tracking-wide relative z-50">
@@ -37,15 +40,6 @@ const Header = () => {
           </button>
 
           <ul className="lg:flex gap-x-5 max-lg:space-y-3 max-lg:fixed max-lg:bg-white max-lg:w-1/2 max-lg:min-w-[300px] max-lg:top-0 max-lg:left-0 max-lg:p-6 max-lg:h-full max-lg:shadow-md max-lg:overflow-auto z-50">
-            <li className="mb-6 hidden max-lg:block">
-              <p>
-                <img
-                  src="https://readymadeui.com/readymadeui.svg"
-                  alt="logo"
-                  className="w-36"
-                />
-              </p>
-            </li>
             <li className="max-lg:border-b border-gray-300 max-lg:py-3 px-3">
               <Link
                 href="/"
