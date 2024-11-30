@@ -1,20 +1,17 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
-async function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
-  res.headers.append('Access-Control-Allow-Credentials', 'true');
-  res.headers.append('Access-Control-Allow-Origin', '*');
+
+  res.headers.append('Access-Control-Allow-Origin', 'http://localhost:3000'); // Only allow this origin
   res.headers.append(
     'Access-Control-Allow-Methods',
-    'GET,DELETE,PATCH,POST,PUT'
+    'GET, DELETE, PATCH, POST, PUT'
   );
-  res.headers.append(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
+
   return res;
 }
 
 export const config = {
-  matcher: ['/api/:path*'],
+  matcher: ['/app/api/:path*'],
 };
