@@ -1,32 +1,38 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '../../../../../utils/dbConnect';
 import User from '@/models/User';
 import nodemailer from 'nodemailer';
 import crypto from 'crypto';
-import Cors from 'cors';
 
-const cors: any = Cors({
-  methods: ['POST', 'GET', 'HEAD'],
-  origin: ['*'],
-});
+// Manually implement CORS
+const setCorsHeaders = (res: NextResponse) => {
+  res.headers.set(
+    'Access-Control-Allow-Origin',
+    'https://pragra-phi.vercel.app/'
+  );
+  res.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.headers.set(
+    'Access-Control-Allow-Headers',
+    'Content-Type, Authorization'
+  );
+  res.headers.set('Access-Control-Max-Age', '86400');
+};
 
-function runMiddleware(
-  req: Request,
-  res: Response,
-  fn: (req: Request, res: Response, next: (result?: any) => void) => void
-): Promise<any> {
-  return new Promise((resolve, reject) => {
-    fn(req, res, (result) => {
-      if (result instanceof Error) {
-        return reject(result);
-      }
-      return resolve(result);
-    });
-  });
-}
+const handleOptions = (): NextResponse => {
+  const res = new NextResponse(null, { status: 204 });
+  setCorsHeaders(res);
+  return res;
+};
 
-export async function POST(req: Request) {
-  await runMiddleware(req, NextResponse.next(), cors);
+export async function POST(req: NextRequest): Promise<NextResponse> {
+  if (req.method === 'OPTIONS') {
+    return handleOptions();
+  }
+
+  const res = new NextResponse(null, { status: 200 });
+
+  setCorsHeaders(res);
+
   const { email } = await req.json();
 
   await dbConnect();
@@ -41,7 +47,6 @@ export async function POST(req: Request) {
 
   user.otp = otp;
   user.otpExpires = expires;
-
   await user.save();
 
   const transporter = nodemailer.createTransport({
@@ -59,5 +64,16 @@ export async function POST(req: Request) {
     text: `Your OTP code is ${otp}. It will expire in 10 minutes.`,
   });
 
-  return NextResponse.json({ message: 'OTP sent to your email.' });
+  return new NextResponse(
+    JSON.stringify({ message: 'OTP sent to your email.' }),
+    {
+      status: 200, // Status code
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': 'https://pragra-phi.vercel.app/',
+        'Access-Control-Allow-Methods': 'POST',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      },
+    }
+  );
 }
