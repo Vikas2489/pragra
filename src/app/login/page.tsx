@@ -22,8 +22,8 @@ const Login: React.FC = () => {
   }
 
   const sendOtp = async () => {
-    const url = 'https://pragra-i32a.vercel.app/api/auth/send-otp';
-    // const url = 'http://localhost:3000/api/auth/send-otp';
+    const url = 'api/auth/send-otp';
+
     const data = { email };
 
     if (!validateEmail(email)) {
@@ -67,8 +67,8 @@ const Login: React.FC = () => {
 
     try {
       const response = await fetch(
-        'https://pragra-i32a.vercel.app/api/auth/verify-otp',
-        // 'http://localhost:3000',
+        'api/auth/verify-otp',
+
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
